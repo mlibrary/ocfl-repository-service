@@ -5,6 +5,7 @@ import java.nio.file.Paths;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -14,6 +15,8 @@ import edu.umich.lib.dor.ocflrepositoryservice.controllers.dtos.ObjectDto;
 import edu.umich.lib.dor.ocflrepositoryservice.domain.Curator;
 import edu.umich.lib.dor.ocflrepositoryservice.service.Deposit;
 import edu.umich.lib.dor.ocflrepositoryservice.service.DepositFactory;
+import edu.umich.lib.dor.ocflrepositoryservice.service.Purge;
+import edu.umich.lib.dor.ocflrepositoryservice.service.PurgeFactory;
 import edu.umich.lib.dor.ocflrepositoryservice.service.Update;
 import edu.umich.lib.dor.ocflrepositoryservice.service.UpdateFactory;
 
@@ -26,6 +29,9 @@ public class ObjectController {
 
     @Autowired
     private UpdateFactory updateFactory;
+
+    @Autowired
+    private PurgeFactory purgeFactory;
 
     @PostMapping(path="/deposit")
     public @ResponseBody ObjectDto deposit(
@@ -61,5 +67,14 @@ public class ObjectController {
         );
         update.execute();
         return new ObjectDto(identifier);
+    }
+
+    @DeleteMapping(path="/purge")
+    public @ResponseBody String purge(
+        @RequestParam String identifier
+    ) {
+        Purge purge = purgeFactory.create(identifier);
+        purge.execute();
+        return "Purged";
     }
 }

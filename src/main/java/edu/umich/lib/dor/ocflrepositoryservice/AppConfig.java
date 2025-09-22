@@ -11,6 +11,7 @@ import org.springframework.core.env.Environment;
 import edu.umich.lib.dor.ocflrepositoryservice.service.DepositDirectory;
 import edu.umich.lib.dor.ocflrepositoryservice.service.DepositFactory;
 import edu.umich.lib.dor.ocflrepositoryservice.service.OcflFilesystemRepositoryClient;
+import edu.umich.lib.dor.ocflrepositoryservice.service.PurgeFactory;
 import edu.umich.lib.dor.ocflrepositoryservice.service.RepositoryClient;
 import edu.umich.lib.dor.ocflrepositoryservice.service.UpdateFactory;
 
@@ -60,6 +61,13 @@ public class AppConfig {
             repositoryClient,
             new DepositDirectory(depositPath)
         );
+    }
+
+    @Bean
+    public PurgeFactory purgeFactory(
+        RepositoryClient repositoryClient
+    ) {
+        return new PurgeFactory(repositoryClient);
     }
 
 }
