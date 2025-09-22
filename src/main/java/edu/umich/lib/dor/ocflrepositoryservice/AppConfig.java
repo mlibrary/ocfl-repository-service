@@ -1,0 +1,49 @@
+package edu.umich.lib.dor.ocflrepositoryservice;
+
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
+
+import edu.umich.lib.dor.ocflrepositoryservice.service.DepositDirectory;
+import edu.umich.lib.dor.ocflrepositoryservice.service.DepositFactory;
+import edu.umich.lib.dor.ocflrepositoryservice.service.OcflFilesystemRepositoryClient;
+import edu.umich.lib.dor.ocflrepositoryservice.service.RepositoryClient;
+
+@Configuration
+@ComponentScan("edu.umich.lib.dor.ocflrepositoryservice.service")
+public class AppConfig {
+
+    @Bean
+    RepositoryClient respositoryClient(
+        Environment environment
+    ) {
+        Path repoPath = Paths.get(
+            environment.getRequiredProperty("repository.path")
+        );
+
+        Path repoStoragePath = repoPath.resolve("storage");
+        Path repoWorkspacePath = repoPath.resolve("workspace");
+        RepositoryClient repoClient = new OcflFilesystemRepositoryClient(
+            repoStoragePath, repoWorkspacePath
+        );
+        return repoClient;
+    }
+
+    @Bean
+    public DepositFactory depositFactory(
+        RepositoryClient repositoryClient,
+        Environment environment
+    ) {
+        Path depositPath = Paths.get(
+            environment.getRequiredProperty("repository.deposit.path")
+        );
+        return new DepositFactory(
+            repositoryClient,
+            new DepositDirectory(depositPath)
+        );
+    }
+}

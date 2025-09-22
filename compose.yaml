@@ -1,0 +1,25 @@
+services:
+  app:
+    build:
+      dockerfile: ./Dockerfile
+      target: base
+    command: gradle bootRun
+    volumes:
+      - ./src:/app/src
+      - ./repos:/app/repos
+      - ./build:/app/build
+      - gradle-cache:/gradle/caches/
+    ports:
+      - '8080:8080'
+  deployment:
+    build:
+      dockerfile: ./Dockerfile
+      target: deployment
+      args:
+        - JAR_NAME_ARG=ocfl-repository-service-0.0.1-SNAPSHOT.jar
+    volumes:
+      - ./repos:/app/repos
+    ports:
+      - '8080:8080'
+volumes:
+  gradle-cache:
