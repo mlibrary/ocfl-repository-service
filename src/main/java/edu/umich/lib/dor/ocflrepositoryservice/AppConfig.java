@@ -12,6 +12,7 @@ import edu.umich.lib.dor.ocflrepositoryservice.service.DepositDirectory;
 import edu.umich.lib.dor.ocflrepositoryservice.service.DepositFactory;
 import edu.umich.lib.dor.ocflrepositoryservice.service.OcflFilesystemRepositoryClient;
 import edu.umich.lib.dor.ocflrepositoryservice.service.RepositoryClient;
+import edu.umich.lib.dor.ocflrepositoryservice.service.UpdateFactory;
 
 @Configuration
 @ComponentScan("edu.umich.lib.dor.ocflrepositoryservice.service")
@@ -46,4 +47,19 @@ public class AppConfig {
             new DepositDirectory(depositPath)
         );
     }
+
+    @Bean
+    public UpdateFactory updateFactory(
+        RepositoryClient repositoryClient,
+        Environment environment
+    ) {
+        Path depositPath = Paths.get(
+            environment.getRequiredProperty("repository.deposit.path")
+        );
+        return new UpdateFactory(
+            repositoryClient,
+            new DepositDirectory(depositPath)
+        );
+    }
+
 }

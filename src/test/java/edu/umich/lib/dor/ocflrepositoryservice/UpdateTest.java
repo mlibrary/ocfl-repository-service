@@ -1,7 +1,6 @@
 package edu.umich.lib.dor.ocflrepositoryservice;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -12,18 +11,18 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import edu.umich.lib.dor.ocflrepositoryservice.domain.Curator;
-import edu.umich.lib.dor.ocflrepositoryservice.exception.EntityAlreadyExistsException;
-import edu.umich.lib.dor.ocflrepositoryservice.service.Deposit;
+import edu.umich.lib.dor.ocflrepositoryservice.exception.NoEntityException;
 import edu.umich.lib.dor.ocflrepositoryservice.service.DepositDirectory;
-import edu.umich.lib.dor.ocflrepositoryservice.service.DepositFactory;
 import edu.umich.lib.dor.ocflrepositoryservice.service.OcflFilesystemRepositoryClient;
 import edu.umich.lib.dor.ocflrepositoryservice.service.Package;
+import edu.umich.lib.dor.ocflrepositoryservice.service.Update;
+import edu.umich.lib.dor.ocflrepositoryservice.service.UpdateFactory;
 
-public class DepositTest {
+public class UpdateTest {
     Curator testCurator = new Curator("test", "test@example.edu");
 
     DepositDirectory depositDirMock;
-    DepositFactory depositFactory;
+    UpdateFactory updateFactory;
     OcflFilesystemRepositoryClient clientMock;
     Package sourcePackageMock;
 
@@ -31,60 +30,62 @@ public class DepositTest {
     void init() {
         this.depositDirMock = mock(DepositDirectory.class);
         this.clientMock = mock(OcflFilesystemRepositoryClient.class);
-        this.depositFactory = new DepositFactory(
+        this.updateFactory = new UpdateFactory(
             clientMock,
             depositDirMock
         );
-
         this.sourcePackageMock = mock(Package.class);
     }
 
     @Test
-    void depositCanBeCreated() {
-        when(clientMock.hasObject("A")).thenReturn(false);
-        when(depositDirMock.getPackage(Paths.get("something")))
+    void updateCanBeCreated() {
+        when(clientMock.hasObject("A")).thenReturn(true);
+        when(depositDirMock.getPackage(Paths.get("update_A")))
             .thenReturn(sourcePackageMock);
-
+    
         assertDoesNotThrow(() -> {
-            depositFactory.create(
+            updateFactory.create(
                 testCurator,
                 "A",
-                Paths.get("something"),
+                Paths.get("update_A"),
                 "we're good"
             );
         });
     }
 
     @Test
-    void depositFailsWhenObjectAlreadyExists() {
-        when(clientMock.hasObject("A")).thenReturn(true);
+    void updateFailsWhenObjectDoesNotExist() {
+        when(clientMock.hasObject("A")).thenReturn(false);
 
-        assertThrows(EntityAlreadyExistsException.class, () -> {
-            depositFactory.create(
+        assertThrows(NoEntityException.class, () -> {
+            updateFactory.create(
                 testCurator,
                 "A",
-                Paths.get("/something"),
-                "did I already add this?"
+                Paths.get("update_A"),
+                "did I not add this yet?"
             );
         });
     }
 
     @Test
-    void depositExecutes() {
-        when(clientMock.hasObject("A")).thenReturn(false);
-        when(depositDirMock.getPackage(Paths.get("something")))
+    void updateExecutes() {
+        when(clientMock.hasObject("A")).thenReturn(true);
+        when(depositDirMock.getPackage(Paths.get("update_A")))
             .thenReturn(sourcePackageMock);
 
-        final Deposit deposit = depositFactory.create(
+        final Update update = updateFactory.create(
             testCurator,
             "A",
-            Paths.get("something"),
+            Paths.get("update_A"),
             "we're good"
         );
 
-        deposit.execute();
-        verify(clientMock).createObject(
-            "A", sourcePackageMock, testCurator, "we're good"
+        update.execute();
+        verify(clientMock).updateObjectFiles(
+            "A",
+            sourcePackageMock,
+            testCurator,
+            "we're good"
         );
     }
 }
