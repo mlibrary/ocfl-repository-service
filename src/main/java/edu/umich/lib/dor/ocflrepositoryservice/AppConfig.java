@@ -8,11 +8,13 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 
+import edu.umich.lib.dor.ocflrepositoryservice.service.CommitFactory;
 import edu.umich.lib.dor.ocflrepositoryservice.service.DepositDirectory;
 import edu.umich.lib.dor.ocflrepositoryservice.service.DepositFactory;
 import edu.umich.lib.dor.ocflrepositoryservice.service.OcflFilesystemRepositoryClient;
 import edu.umich.lib.dor.ocflrepositoryservice.service.PurgeFactory;
 import edu.umich.lib.dor.ocflrepositoryservice.service.RepositoryClient;
+import edu.umich.lib.dor.ocflrepositoryservice.service.StageFactory;
 import edu.umich.lib.dor.ocflrepositoryservice.service.UpdateFactory;
 
 @Configuration
@@ -64,10 +66,26 @@ public class AppConfig {
     }
 
     @Bean
-    public PurgeFactory purgeFactory(
-        RepositoryClient repositoryClient
-    ) {
+    public PurgeFactory purgeFactory(RepositoryClient repositoryClient) {
         return new PurgeFactory(repositoryClient);
     }
 
+    @Bean
+    public StageFactory stageFactory(
+        RepositoryClient repositoryClient,
+        Environment environment
+    ) {
+        Path depositPath = Paths.get(
+            environment.getRequiredProperty("repository.deposit.path")
+        );
+        return new StageFactory(
+            repositoryClient,
+            new DepositDirectory(depositPath)
+        );
+    }
+
+    @Bean
+    public CommitFactory commitFactory(RepositoryClient repositoryClient) {
+        return new CommitFactory(repositoryClient);
+    }
 }

@@ -1,17 +1,25 @@
 package edu.umich.lib.dor.ocflrepositoryservice.service;
 
+import edu.umich.lib.dor.ocflrepositoryservice.domain.Curator;
 import edu.umich.lib.dor.ocflrepositoryservice.exception.NoEntityException;
 
-public class Purge implements Command {
-    private String objectIdentifier;
+public class Commit implements Command {
     private RepositoryClient repositoryClient;
+    private String objectIdentifier;
+    private Curator curator;
+    private String message;
 
-    public Purge(
+    public Commit(
         RepositoryClient repositoryClient,
-        String objectIdentifier
+        String objectIdentifier,
+        Curator curator,
+        String message
     ) {
         this.repositoryClient = repositoryClient;
+
         this.objectIdentifier = objectIdentifier;
+        this.curator = curator;
+        this.message = message;
 
         boolean objectExists = repositoryClient.hasObject(objectIdentifier);
         if (!objectExists) {
@@ -25,6 +33,6 @@ public class Purge implements Command {
     }
 
     public void execute() {
-        repositoryClient.purgeObject(objectIdentifier);
+        repositoryClient.commitChanges(objectIdentifier, curator, message);
     }
 }

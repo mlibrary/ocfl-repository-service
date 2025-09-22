@@ -11,9 +11,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.function.Consumer;
 
+import io.ocfl.api.MutableOcflRepository;
 import io.ocfl.api.OcflObjectUpdater;
 import io.ocfl.api.OcflOption;
-import io.ocfl.api.OcflRepository;
 import io.ocfl.api.model.FileDetails;
 import io.ocfl.api.model.ObjectDetails;
 import io.ocfl.api.model.ObjectVersionId;
@@ -30,13 +30,13 @@ import edu.umich.lib.dor.ocflrepositoryservice.service.OcflFilesystemRepositoryC
 import edu.umich.lib.dor.ocflrepositoryservice.service.Package;
 
 public class OcflFilesystemRepositoryClientTest {
-    OcflRepository ocflRepositoryMock;
+    MutableOcflRepository ocflRepositoryMock;
     OcflFilesystemRepositoryClient repositoryClient;
     Package sourcePackageMock;
 
     @BeforeEach
     public void init() {
-        ocflRepositoryMock = mock(OcflRepository.class);
+        ocflRepositoryMock = mock(MutableOcflRepository.class);
         repositoryClient = new OcflFilesystemRepositoryClient(ocflRepositoryMock);
         sourcePackageMock = mock(Package.class);
     }
@@ -155,5 +155,81 @@ public class OcflFilesystemRepositoryClientTest {
     public void clientPurgesObject() {
         repositoryClient.purgeObject("A");
         verify(ocflRepositoryMock).purgeObject("A");
+    }
+
+    @Test
+    public void clientStagesChanges() {
+        when(sourcePackageMock.getRootPath()).thenReturn(Paths.get("some/path/update_A"));
+        when(sourcePackageMock.getFilePaths()).thenReturn(List.of(
+            Paths.get("A.txt"), Paths.get("B/C.txt")
+        ));
+
+        when(ocflRepositoryMock.stageChanges(
+            any(ObjectVersionId.class),
+            any(VersionInfo.class),
+            ArgumentMatchers.<Consumer<OcflObjectUpdater>>any()
+        ))
+            .then((invocationOnMock) -> {
+                var args = invocationOnMock.getArguments();
+
+                ObjectVersionId versionId = (ObjectVersionId) args[0];
+                assertEquals("A", versionId.getObjectId());
+
+                VersionInfo versionInfo = (VersionInfo) args[1];
+                assertEquals("Staging some files", versionInfo.getMessage());
+                User user = versionInfo.getUser();
+                assertEquals("test", user.getName());
+                assertEquals("test@example.edu", user.getAddress());
+
+                Consumer<OcflObjectUpdater> updaterLambda = invocationOnMock.getArgument(2);
+                OcflObjectUpdater updaterMock = mock(OcflObjectUpdater.class);
+                updaterLambda.accept(updaterMock);
+
+                verify(updaterMock).addPath(
+                    Paths.get("some/path/update_A/A.txt"),
+                    "A.txt",
+                    OcflOption.OVERWRITE
+                );
+                verify(updaterMock).addPath(
+                    Paths.get("some/path/update_A/B/C.txt"),
+                    "B/C.txt",
+                    OcflOption.OVERWRITE
+                );
+                return versionId;
+            });
+
+        repositoryClient.stageChanges(
+            "A",
+            sourcePackageMock,
+            new Curator("test", "test@example.edu"),
+            "Staging some files"
+        );
+    }
+
+    @Test
+    public void clientCommitsChanges() {
+        repositoryClient.commitChanges(
+            "A",
+            new Curator("test", "test@example.edu"),
+            "Adding version based on changes"
+        );
+        verify(ocflRepositoryMock).commitStagedChanges(
+            "A",
+            new VersionInfo().setUser(
+                "test", "test@example.edu"
+            ).setMessage("Adding version based on changes")
+        );
+    }
+
+    @Test
+    public void clientIndicatesItHasChanges() {
+        repositoryClient.hasChanges("A");
+        verify(ocflRepositoryMock).hasStagedChanges("A");
+    }
+
+    @Test
+    public void clientPurgesChanges() {
+        repositoryClient.purgeChanges("A");
+        verify(ocflRepositoryMock).purgeStagedChanges("A");
     }
 }

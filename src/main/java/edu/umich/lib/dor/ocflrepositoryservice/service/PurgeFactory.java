@@ -7,7 +7,7 @@ public class PurgeFactory {
         this.repositoryClient = repositoryClient;
     }
 
-    public Purge create(String packageIdentifier) {
-        return new Purge(repositoryClient, packageIdentifier);
+    public Purge create(String objectIdentifier) {
+        return new Purge(repositoryClient, objectIdentifier);
     }
 }

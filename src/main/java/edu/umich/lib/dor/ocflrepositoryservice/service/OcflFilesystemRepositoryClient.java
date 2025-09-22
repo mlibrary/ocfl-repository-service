@@ -5,8 +5,8 @@ import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.List;
 
+import io.ocfl.api.MutableOcflRepository;
 import io.ocfl.api.OcflOption;
-import io.ocfl.api.OcflRepository;
 import io.ocfl.api.model.FileDetails;
 import io.ocfl.api.model.ObjectDetails;
 import io.ocfl.api.model.ObjectVersionId;
@@ -22,7 +22,7 @@ public class OcflFilesystemRepositoryClient implements RepositoryClient {
     private static final Logger log = LoggerFactory
         .getLogger(OcflFilesystemRepositoryClient.class);
 
-    private OcflRepository repo;
+    private MutableOcflRepository repo;
 
     public OcflFilesystemRepositoryClient(Path rootPath, Path workPath) {
         this.repo = new OcflRepositoryBuilder()
@@ -30,10 +30,10 @@ public class OcflFilesystemRepositoryClient implements RepositoryClient {
             .defaultLayoutConfig(new HashedNTupleLayoutConfig())
             .storage(storage -> storage.fileSystem(rootPath))
             .workDir(workPath)
-            .build();
+            .buildMutable();
     }
 
-    public OcflFilesystemRepositoryClient(OcflRepository repository) {
+    public OcflFilesystemRepositoryClient(MutableOcflRepository repository) {
         this.repo = repository;
     }
 
@@ -125,4 +125,39 @@ public class OcflFilesystemRepositoryClient implements RepositoryClient {
         return this;
     }
 
+    public RepositoryClient stageChanges(
+        String objectId, Package sourcePackage, Curator curator, String message
+    ) {
+        Path rootPackagePath = sourcePackage.getRootPath();
+        repo.stageChanges(
+            ObjectVersionId.head(objectId),
+            createNewVersion(curator, message),
+            updater -> {
+                for (Path inputPath : sourcePackage.getFilePaths()) {
+                    updater.addPath(
+                        rootPackagePath.resolve(inputPath),
+                        inputPath.toString(),
+                        OcflOption.OVERWRITE
+                    );
+                }
+            }
+        );
+        return this;
+    }
+
+    public RepositoryClient commitChanges(
+        String objectId, Curator curator, String message
+    ) {
+        repo.commitStagedChanges(objectId, createNewVersion(curator, message));
+        return this;
+    }
+
+    public boolean hasChanges(String objectId) {
+        return repo.hasStagedChanges(objectId);
+    }
+
+    public RepositoryClient purgeChanges(String objectId) {
+        repo.purgeStagedChanges(objectId);
+        return this;
+    }
 }

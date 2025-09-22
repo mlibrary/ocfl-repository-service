@@ -25,7 +25,7 @@ public class Update implements Command {
         this.objectIdentifier = objectIdentifier;
         this.message = message;
 
-        Boolean objectExists = repositoryClient.hasObject(objectIdentifier);
+        boolean objectExists = repositoryClient.hasObject(objectIdentifier);
         if (!objectExists) {
             throw new NoEntityException(
                 String.format(

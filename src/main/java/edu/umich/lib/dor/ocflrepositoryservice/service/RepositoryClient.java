@@ -25,4 +25,14 @@ public interface RepositoryClient {
     List<Path> getFilePaths(String id);
 
     List<Path> getStorageFilePaths(String id);
+
+    RepositoryClient stageChanges(
+        String objectId, Package sourcePackage, Curator curator, String message
+    );
+
+    RepositoryClient commitChanges(String id, Curator curator, String message);
+
+    RepositoryClient purgeChanges(String id);
+
+    boolean hasChanges(String id);
 }
