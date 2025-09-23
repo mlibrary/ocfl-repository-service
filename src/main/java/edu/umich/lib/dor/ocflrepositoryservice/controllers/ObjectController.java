@@ -11,14 +11,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import edu.umich.lib.dor.ocflrepositoryservice.controllers.dtos.ObjectDto;
+import edu.umich.lib.dor.ocflrepositoryservice.controllers.dtos.OcflObjectDto;
 import edu.umich.lib.dor.ocflrepositoryservice.domain.Curator;
+import edu.umich.lib.dor.ocflrepositoryservice.domain.OcflObject;
 import edu.umich.lib.dor.ocflrepositoryservice.service.Commit;
 import edu.umich.lib.dor.ocflrepositoryservice.service.CommitFactory;
 import edu.umich.lib.dor.ocflrepositoryservice.service.Deposit;
 import edu.umich.lib.dor.ocflrepositoryservice.service.DepositFactory;
 import edu.umich.lib.dor.ocflrepositoryservice.service.Purge;
 import edu.umich.lib.dor.ocflrepositoryservice.service.PurgeFactory;
+import edu.umich.lib.dor.ocflrepositoryservice.service.RepositoryClient;
 import edu.umich.lib.dor.ocflrepositoryservice.service.Stage;
 import edu.umich.lib.dor.ocflrepositoryservice.service.StageFactory;
 import edu.umich.lib.dor.ocflrepositoryservice.service.Update;
@@ -27,6 +29,9 @@ import edu.umich.lib.dor.ocflrepositoryservice.service.UpdateFactory;
 @Controller
 @RequestMapping(path="/object")
 public class ObjectController {
+
+    @Autowired
+    private RepositoryClient repositoryClient;
 
     @Autowired
     private DepositFactory depositFactory;
@@ -44,7 +49,7 @@ public class ObjectController {
     private CommitFactory commitFactory;
 
     @PostMapping(path="/deposit")
-    public @ResponseBody ObjectDto deposit(
+    public @ResponseBody OcflObjectDto deposit(
         @RequestParam String identifier,
         @RequestParam String depositSourcePath,
         @RequestParam String message,
@@ -58,11 +63,13 @@ public class ObjectController {
             identifier, sourcePathRelativeToDeposit, curator, message
         );
         deposit.execute();
-        return new ObjectDto(identifier);
+
+        OcflObject ocflObject = new OcflObject(identifier, repositoryClient.getVersions(identifier));
+        return new OcflObjectDto(ocflObject);
     }
 
     @PostMapping(path="/update")
-    public @ResponseBody ObjectDto update(
+    public @ResponseBody OcflObjectDto update(
         @RequestParam String identifier,
         @RequestParam String depositSourcePath,
         @RequestParam String message,
@@ -76,7 +83,9 @@ public class ObjectController {
             identifier, sourcePathRelativeToDeposit, curator, message
         );
         update.execute();
-        return new ObjectDto(identifier);
+
+        OcflObject ocflObject = new OcflObject(identifier, repositoryClient.getVersions(identifier));
+        return new OcflObjectDto(ocflObject);
     }
 
     @DeleteMapping(path="/purge")
@@ -89,7 +98,7 @@ public class ObjectController {
     }
 
     @PostMapping(path="/stage")
-    public @ResponseBody ObjectDto stage(
+    public @ResponseBody OcflObjectDto stage(
         @RequestParam String identifier,
         @RequestParam String depositSourcePath,
         @RequestParam String message,
@@ -103,11 +112,13 @@ public class ObjectController {
             curator, identifier, sourcePathRelativeToDeposit, message
         );
         stage.execute();
-        return new ObjectDto(identifier);
+
+        OcflObject ocflObject = new OcflObject(identifier, repositoryClient.getVersions(identifier));
+        return new OcflObjectDto(ocflObject);
     }
 
     @PostMapping(path="/commit")
-    public @ResponseBody ObjectDto commit(
+    public @ResponseBody OcflObjectDto commit(
         @RequestParam String identifier,
         @RequestParam String message,
         @RequestParam String curatorName,
@@ -117,6 +128,8 @@ public class ObjectController {
 
         Commit commit = commitFactory.create(identifier, curator, message);
         commit.execute();
-        return new ObjectDto(identifier);
+
+        OcflObject ocflObject = new OcflObject(identifier, repositoryClient.getVersions(identifier));
+        return new OcflObjectDto(ocflObject);
     }
 }

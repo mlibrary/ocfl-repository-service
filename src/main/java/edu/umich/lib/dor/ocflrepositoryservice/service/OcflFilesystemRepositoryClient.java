@@ -2,6 +2,7 @@ package edu.umich.lib.dor.ocflrepositoryservice.service;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -17,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import edu.umich.lib.dor.ocflrepositoryservice.domain.Curator;
+import edu.umich.lib.dor.ocflrepositoryservice.domain.Version;
 
 public class OcflFilesystemRepositoryClient implements RepositoryClient {
     private static final Logger log = LoggerFactory
@@ -92,6 +94,22 @@ public class OcflFilesystemRepositoryClient implements RepositoryClient {
             .toList();
         log.debug(filePaths.toString());
         return filePaths;
+    }
+
+    public List<Version> getVersions(String objectId) {
+        List<Version> versions = new ArrayList<>();
+        var versionMap = repo.describeObject(objectId).getVersionMap();
+        versionMap.forEach((versionNum, versionDetails) -> {
+            var versionInfo = versionDetails.getVersionInfo();
+            var user = versionInfo.getUser();
+            versions.add(new Version(
+                versionNum.getVersionNum(),
+                versionInfo.getMessage(),
+                new Curator(user.getName(), user.getAddress().replace("mailto:", "")),
+                versionInfo.getCreated()
+            ));
+        });
+        return versions;
     }
 
     public RepositoryClient deleteObjectFile(

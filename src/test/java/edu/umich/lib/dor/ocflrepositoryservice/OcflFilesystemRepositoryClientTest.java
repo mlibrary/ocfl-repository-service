@@ -7,6 +7,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.nio.file.Paths;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.List;
 import java.util.function.Consumer;
@@ -21,11 +23,14 @@ import io.ocfl.api.model.User;
 import io.ocfl.api.model.VersionDetails;
 import io.ocfl.api.model.VersionInfo;
 import io.ocfl.api.model.VersionNum;
+
+import org.assertj.core.data.Offset;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 
 import edu.umich.lib.dor.ocflrepositoryservice.domain.Curator;
+import edu.umich.lib.dor.ocflrepositoryservice.domain.Version;
 import edu.umich.lib.dor.ocflrepositoryservice.service.OcflFilesystemRepositoryClient;
 import edu.umich.lib.dor.ocflrepositoryservice.service.Package;
 
@@ -33,6 +38,7 @@ public class OcflFilesystemRepositoryClientTest {
     MutableOcflRepository ocflRepositoryMock;
     OcflFilesystemRepositoryClient repositoryClient;
     Package sourcePackageMock;
+    OffsetDateTime now = OffsetDateTime.now(ZoneId.of("UTC"));
 
     @BeforeEach
     public void init() {
@@ -50,6 +56,11 @@ public class OcflFilesystemRepositoryClientTest {
         fileMap.put("A", fileaDetails);
         var versionDetails = new VersionDetails();
         versionDetails.setFileMap(fileMap);
+        VersionInfo versionInfo = new VersionInfo()
+            .setCreated(now)
+            .setMessage("Some message")
+            .setUser("test", "mailto:test@example.edu");
+        versionDetails.setVersionInfo(versionInfo);
 
         var versionMap = new HashMap<VersionNum, VersionDetails>();
         var versionNum = new VersionNum(1);
@@ -149,6 +160,17 @@ public class OcflFilesystemRepositoryClientTest {
             .thenReturn(createObjectDetails());
         var filePaths = repositoryClient.getStorageFilePaths("A");
         assertIterableEquals(List.of(Paths.get("/storage/A/test.txt")), filePaths);
+    }
+
+    @Test
+    public void clientGetsVersions() {
+        when(ocflRepositoryMock.describeObject("A"))
+            .thenReturn(createObjectDetails());
+        List<Version> versions = repositoryClient.getVersions("A");
+        Version expectedVersion = new Version(
+            1, "Some message", new Curator("test", "test@example.edu"), now
+        );
+        assertIterableEquals(List.of(expectedVersion), versions);
     }
 
     @Test
