@@ -17,15 +17,14 @@ public class Deposit implements Command {
     public Deposit(
         RepositoryClient repositoryClient,
         DepositDirectory depositDir,
-        Curator curator,
         String objectIdentifier,
         Path sourcePath,
+        Curator curator,
         String message
     ) {
         this.repositoryClient = repositoryClient;
-
-        this.curator = curator;
         this.objectIdentifier = objectIdentifier;
+        this.curator = curator;
         this.message = message;
 
         boolean objectExists = this.repositoryClient.hasObject(objectIdentifier);

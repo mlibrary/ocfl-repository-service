@@ -5,9 +5,8 @@ import java.nio.file.Path;
 import edu.umich.lib.dor.ocflrepositoryservice.domain.Curator;
 
 public class DepositFactory {
-    RepositoryClient repositoryClient;
-    Path depositPath;
-    DepositDirectory depositDir;
+    private RepositoryClient repositoryClient;
+    private DepositDirectory depositDir;
 
     public DepositFactory(
         RepositoryClient repositoryClient,
@@ -18,17 +17,17 @@ public class DepositFactory {
     }
 
     public Deposit create(
-        Curator curator,
         String objectIdentifier,
         Path sourcePath,
+        Curator curator,
         String message
     ) {
         return new Deposit(
             repositoryClient,
             depositDir,
-            curator,
             objectIdentifier,
             sourcePath,
+            curator,
             message
         );
     }

@@ -55,7 +55,7 @@ public class ObjectController {
 
         Path sourcePathRelativeToDeposit = Paths.get(depositSourcePath);
         Deposit deposit = depositFactory.create(
-            curator, identifier, sourcePathRelativeToDeposit, message
+            identifier, sourcePathRelativeToDeposit, curator, message
         );
         deposit.execute();
         return new ObjectDto(identifier);
@@ -73,7 +73,7 @@ public class ObjectController {
 
         Path sourcePathRelativeToDeposit = Paths.get(depositSourcePath);
         Update update = updateFactory.create(
-            curator, identifier, sourcePathRelativeToDeposit, message
+            identifier, sourcePathRelativeToDeposit, curator, message
         );
         update.execute();
         return new ObjectDto(identifier);

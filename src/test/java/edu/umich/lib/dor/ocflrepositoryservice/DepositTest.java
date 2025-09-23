@@ -47,9 +47,9 @@ public class DepositTest {
 
         assertDoesNotThrow(() -> {
             depositFactory.create(
-                testCurator,
                 "A",
                 Paths.get("something"),
+                testCurator,
                 "we're good"
             );
         });
@@ -61,9 +61,9 @@ public class DepositTest {
 
         assertThrows(EntityAlreadyExistsException.class, () -> {
             depositFactory.create(
-                testCurator,
                 "A",
                 Paths.get("/something"),
+                testCurator,
                 "did I already add this?"
             );
         });
@@ -76,9 +76,9 @@ public class DepositTest {
             .thenReturn(sourcePackageMock);
 
         final Deposit deposit = depositFactory.create(
-            testCurator,
             "A",
             Paths.get("something"),
+            testCurator,
             "we're good"
         );
 

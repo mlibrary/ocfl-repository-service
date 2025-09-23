@@ -45,9 +45,9 @@ public class UpdateTest {
     
         assertDoesNotThrow(() -> {
             updateFactory.create(
-                testCurator,
                 "A",
                 Paths.get("update_A"),
+                testCurator,
                 "we're good"
             );
         });
@@ -59,9 +59,9 @@ public class UpdateTest {
 
         assertThrows(NoEntityException.class, () -> {
             updateFactory.create(
-                testCurator,
                 "A",
                 Paths.get("update_A"),
+                testCurator,
                 "did I not add this yet?"
             );
         });
@@ -74,9 +74,9 @@ public class UpdateTest {
             .thenReturn(sourcePackageMock);
 
         final Update update = updateFactory.create(
-            testCurator,
             "A",
             Paths.get("update_A"),
+            testCurator,
             "we're good"
         );
 
