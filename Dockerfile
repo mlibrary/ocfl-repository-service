@@ -1,4 +1,4 @@
-FROM gradle:8.10-jdk21-jammy AS base
+FROM gradle:8.14.3-jdk24-corretto AS base
 
 WORKDIR /app/
 
@@ -11,7 +11,7 @@ EXPOSE 8080
 
 CMD ["gradle", "build"]
 
-FROM gradle:8.10-jdk21-jammy as build
+FROM gradle:8.14.3-jdk24-corretto AS build
 
 WORKDIR /app/
 
@@ -19,7 +19,7 @@ COPY --from=base /app ./
 
 RUN gradle bootJar
 
-FROM bitnami/java:21 AS deployment
+FROM amazoncorretto:24 AS deployment
 
 ARG JAR_NAME_ARG
 
