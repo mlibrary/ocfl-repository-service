@@ -24,7 +24,6 @@ import io.ocfl.api.model.VersionDetails;
 import io.ocfl.api.model.VersionInfo;
 import io.ocfl.api.model.VersionNum;
 
-import org.assertj.core.data.Offset;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
@@ -55,7 +54,7 @@ public class OcflFilesystemRepositoryClientTest {
         var fileMap = new HashMap<String, FileDetails>();
         fileMap.put("A", fileaDetails);
         var versionDetails = new VersionDetails();
-        versionDetails.setFileMap(fileMap);
+        versionDetails.setFileMap(fileMap).setMutable(false);
         VersionInfo versionInfo = new VersionInfo()
             .setCreated(now)
             .setMessage("Some message")
@@ -65,10 +64,10 @@ public class OcflFilesystemRepositoryClientTest {
         var versionMap = new HashMap<VersionNum, VersionDetails>();
         var versionNum = new VersionNum(1);
         versionMap.put(versionNum, versionDetails);
-        var details = new ObjectDetails();
-        details.setId("A");
-        details.setHeadVersionNum(versionNum);
-        details.setVersions(versionMap);
+        var details = new ObjectDetails()
+            .setId("A")
+            .setHeadVersionNum(versionNum)
+            .setVersions(versionMap);
         return details;
     }
 
@@ -168,7 +167,7 @@ public class OcflFilesystemRepositoryClientTest {
             .thenReturn(createObjectDetails());
         List<Version> versions = repositoryClient.getVersions("A");
         Version expectedVersion = new Version(
-            1, "Some message", new Curator("test", "test@example.edu"), now
+            1, "Some message", new Curator("test", "test@example.edu"), now, false
         );
         assertIterableEquals(List.of(expectedVersion), versions);
     }

@@ -7,12 +7,14 @@ public class VersionDto {
     private String message;
     private CuratorDto curator;
     private String created;
+    private boolean isStaged;
 
     public VersionDto(Version version) {
         this.number = version.number();
         this.message = version.message();
         this.curator = new CuratorDto(version.curator());
         this.created = version.created().toString();
+        this.isStaged = version.isStaged();
     }
 
     public long getNumber() {
@@ -30,4 +32,9 @@ public class VersionDto {
     public String getCreated() {
         return created;
     }
+
+    public boolean getIsStaged() {
+        return isStaged;
+    }
+
 }

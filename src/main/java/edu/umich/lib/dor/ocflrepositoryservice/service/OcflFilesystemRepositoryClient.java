@@ -106,7 +106,8 @@ public class OcflFilesystemRepositoryClient implements RepositoryClient {
                 versionNum.getVersionNum(),
                 versionInfo.getMessage(),
                 new Curator(user.getName(), user.getAddress().replace("mailto:", "")),
-                versionInfo.getCreated()
+                versionInfo.getCreated(),
+                versionDetails.isMutable()
             ));
         });
         return versions;
