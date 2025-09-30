@@ -4,6 +4,7 @@ import java.nio.file.Path;
 
 import edu.umich.lib.dor.ocflrepositoryservice.domain.Curator;
 import edu.umich.lib.dor.ocflrepositoryservice.exception.NoEntityException;
+import edu.umich.lib.dor.ocflrepositoryservice.exception.ObjectHasChangesException;
 
 public class Update implements Command {
     private Curator curator;
@@ -30,6 +31,16 @@ public class Update implements Command {
             throw new NoEntityException(
                 String.format(
                     "No object with identifier \"%s\" was found.",
+                    objectIdentifier
+                )
+            );
+        }
+
+        boolean hasChanges = repositoryClient.hasChanges(objectIdentifier);
+        if (hasChanges) {
+            throw new ObjectHasChangesException(
+                String.format(
+                    "Object with identifier \"%s\" already has staged changes.",
                     objectIdentifier
                 )
             );

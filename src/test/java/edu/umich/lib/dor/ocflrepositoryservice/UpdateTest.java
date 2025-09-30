@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 
 import edu.umich.lib.dor.ocflrepositoryservice.domain.Curator;
 import edu.umich.lib.dor.ocflrepositoryservice.exception.NoEntityException;
+import edu.umich.lib.dor.ocflrepositoryservice.exception.ObjectHasChangesException;
 import edu.umich.lib.dor.ocflrepositoryservice.service.DepositDirectory;
 import edu.umich.lib.dor.ocflrepositoryservice.service.OcflFilesystemRepositoryClient;
 import edu.umich.lib.dor.ocflrepositoryservice.service.Package;
@@ -40,6 +41,7 @@ public class UpdateTest {
     @Test
     void updateCanBeCreated() {
         when(clientMock.hasObject("A")).thenReturn(true);
+        when(clientMock.hasChanges("A")).thenReturn(false);
         when(depositDirMock.getPackage(Paths.get("update_A")))
             .thenReturn(sourcePackageMock);
     
@@ -68,8 +70,24 @@ public class UpdateTest {
     }
 
     @Test
+    void updateFailsWhenObjectHasChanges() {
+        when(clientMock.hasObject("A")).thenReturn(true);
+        when(clientMock.hasChanges("A")).thenReturn(true);
+
+        assertThrows(ObjectHasChangesException.class, () -> {
+            updateFactory.create(
+                "A",
+                Paths.get("update_A"),
+                testCurator,
+                "did I stage something already?"
+            );
+        });
+    }
+
+    @Test
     void updateExecutes() {
         when(clientMock.hasObject("A")).thenReturn(true);
+        when(clientMock.hasChanges("A")).thenReturn(false);
         when(depositDirMock.getPackage(Paths.get("update_A")))
             .thenReturn(sourcePackageMock);
 
