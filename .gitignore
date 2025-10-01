@@ -36,9 +36,9 @@ out/
 ### VS Code ###
 .vscode/
 
-### Repositories ###
-repos/preservation/*
-repos/deposit/*
+### Data ###
+data/preservation/*
+data/deposit/*
 
 ### Testing ###
 src/test/resources/test_repositories/preservation/storage/*

@@ -6,7 +6,7 @@ services:
     command: gradle bootRun
     volumes:
       - ./src:/app/src
-      - ./repos:/app/repos
+      - ./data:/app/data
       - ./build:/app/build
       - gradle-cache:/gradle/caches/
     ports:
@@ -18,7 +18,7 @@ services:
       args:
         - JAR_NAME_ARG=ocfl-repository-service-0.0.1-SNAPSHOT.jar
     volumes:
-      - ./repos:/app/repos
+      - ./data:/app/data
     ports:
       - '8080:8080'
 volumes:

@@ -43,7 +43,7 @@ public class AppConfig {
         Environment environment
     ) {
         Path depositPath = Paths.get(
-            environment.getRequiredProperty("repository.deposit.path")
+            environment.getRequiredProperty("deposit.path")
         );
         return new DepositFactory(
             repositoryClient,
@@ -57,7 +57,7 @@ public class AppConfig {
         Environment environment
     ) {
         Path depositPath = Paths.get(
-            environment.getRequiredProperty("repository.deposit.path")
+            environment.getRequiredProperty("deposit.path")
         );
         return new UpdateFactory(
             repositoryClient,
@@ -76,7 +76,7 @@ public class AppConfig {
         Environment environment
     ) {
         Path depositPath = Paths.get(
-            environment.getRequiredProperty("repository.deposit.path")
+            environment.getRequiredProperty("deposit.path")
         );
         return new StageFactory(
             repositoryClient,

@@ -8,15 +8,15 @@
 
 ### Configuration
 
-#### Repositories setup
+#### Deposit and repository setup
 
 ```sh
-mkdir repos/preservation/storage
-mkdir repos/preservation/workspace
-mkdir repos/deposit
+mkdir data/preservation/storage
+mkdir data/preservation/workspace
+mkdir data/deposit
 ```
 
-Then, add a package (directory with any contents) to [repos/deposit](repos/deposit/).
+Then, add a package (directory with any contents) to [data/deposit](data/deposit/).
 
 ### Usage
 
