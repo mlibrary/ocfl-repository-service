@@ -2,13 +2,12 @@ package edu.umich.lib.dor.ocflrepositoryservice.service;
 
 import java.nio.file.Path;
 
-import edu.umich.lib.dor.ocflrepositoryservice.domain.Curator;
+import edu.umich.lib.dor.ocflrepositoryservice.domain.Agent;
 import edu.umich.lib.dor.ocflrepositoryservice.exception.EntityAlreadyExistsException;
 
 public class Deposit implements Command {
-
-    private Curator curator;
     private String objectIdentifier;
+    private Agent agent;
     String message;
 
     RepositoryClient repositoryClient;
@@ -19,12 +18,12 @@ public class Deposit implements Command {
         DepositDirectory depositDir,
         String objectIdentifier,
         Path sourcePath,
-        Curator curator,
+        Agent agent,
         String message
     ) {
         this.repositoryClient = repositoryClient;
         this.objectIdentifier = objectIdentifier;
-        this.curator = curator;
+        this.agent = agent;
         this.message = message;
 
         boolean objectExists = this.repositoryClient.hasObject(objectIdentifier);
@@ -43,7 +42,7 @@ public class Deposit implements Command {
 
     public void execute() {
         repositoryClient.createObject(
-            objectIdentifier, sourcePackage, curator, message
+            objectIdentifier, sourcePackage, agent, message
         );
     }
 }

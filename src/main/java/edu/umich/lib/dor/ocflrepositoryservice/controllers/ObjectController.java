@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import edu.umich.lib.dor.ocflrepositoryservice.controllers.dtos.OcflObjectDto;
-import edu.umich.lib.dor.ocflrepositoryservice.domain.Curator;
+import edu.umich.lib.dor.ocflrepositoryservice.domain.Agent;
 import edu.umich.lib.dor.ocflrepositoryservice.domain.OcflObject;
 import edu.umich.lib.dor.ocflrepositoryservice.service.Commit;
 import edu.umich.lib.dor.ocflrepositoryservice.service.CommitFactory;
@@ -53,14 +53,14 @@ public class ObjectController {
         @RequestParam String identifier,
         @RequestParam String depositSourcePath,
         @RequestParam String message,
-        @RequestParam String curatorName,
-        @RequestParam String curatorEmail
+        @RequestParam String agentName,
+        @RequestParam String agentEmail
     ) {
-        Curator curator = new Curator(curatorName, curatorEmail);
+        Agent agent = new Agent(agentName, agentEmail);
 
         Path sourcePathRelativeToDeposit = Paths.get(depositSourcePath);
         Deposit deposit = depositFactory.create(
-            identifier, sourcePathRelativeToDeposit, curator, message
+            identifier, sourcePathRelativeToDeposit, agent, message
         );
         deposit.execute();
 
@@ -73,14 +73,14 @@ public class ObjectController {
         @RequestParam String identifier,
         @RequestParam String depositSourcePath,
         @RequestParam String message,
-        @RequestParam String curatorName,
-        @RequestParam String curatorEmail
+        @RequestParam String agentName,
+        @RequestParam String agentEmail
     ) {
-        Curator curator = new Curator(curatorName, curatorEmail);
+        Agent agent = new Agent(agentName, agentEmail);
 
         Path sourcePathRelativeToDeposit = Paths.get(depositSourcePath);
         Update update = updateFactory.create(
-            identifier, sourcePathRelativeToDeposit, curator, message
+            identifier, sourcePathRelativeToDeposit, agent, message
         );
         update.execute();
 
@@ -102,14 +102,14 @@ public class ObjectController {
         @RequestParam String identifier,
         @RequestParam String depositSourcePath,
         @RequestParam String message,
-        @RequestParam String curatorName,
-        @RequestParam String curatorEmail
+        @RequestParam String agentName,
+        @RequestParam String agentEmail
     ) {
-        Curator curator = new Curator(curatorName, curatorEmail);
+        Agent agent = new Agent(agentName, agentEmail);
 
         Path sourcePathRelativeToDeposit = Paths.get(depositSourcePath);
         Stage stage = stageFactory.create(
-            curator, identifier, sourcePathRelativeToDeposit, message
+            agent, identifier, sourcePathRelativeToDeposit, message
         );
         stage.execute();
 
@@ -121,12 +121,12 @@ public class ObjectController {
     public @ResponseBody OcflObjectDto commit(
         @RequestParam String identifier,
         @RequestParam String message,
-        @RequestParam String curatorName,
-        @RequestParam String curatorEmail
+        @RequestParam String agentName,
+        @RequestParam String agentEmail
     ) {
-        Curator curator = new Curator(curatorName, curatorEmail);
+        Agent agent = new Agent(agentName, agentEmail);
 
-        Commit commit = commitFactory.create(identifier, curator, message);
+        Commit commit = commitFactory.create(identifier, agent, message);
         commit.execute();
 
         OcflObject ocflObject = new OcflObject(identifier, repositoryClient.getVersions(identifier));

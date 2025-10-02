@@ -10,7 +10,7 @@ import java.nio.file.Paths;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import edu.umich.lib.dor.ocflrepositoryservice.domain.Curator;
+import edu.umich.lib.dor.ocflrepositoryservice.domain.Agent;
 import edu.umich.lib.dor.ocflrepositoryservice.exception.NoEntityException;
 import edu.umich.lib.dor.ocflrepositoryservice.exception.ObjectHasChangesException;
 import edu.umich.lib.dor.ocflrepositoryservice.service.DepositDirectory;
@@ -20,7 +20,7 @@ import edu.umich.lib.dor.ocflrepositoryservice.service.Update;
 import edu.umich.lib.dor.ocflrepositoryservice.service.UpdateFactory;
 
 public class UpdateTest {
-    Curator testCurator = new Curator("test", "test@example.edu");
+    Agent testAgent = new Agent("test", "test@example.edu");
 
     DepositDirectory depositDirMock;
     UpdateFactory updateFactory;
@@ -49,7 +49,7 @@ public class UpdateTest {
             updateFactory.create(
                 "A",
                 Paths.get("update_A"),
-                testCurator,
+                testAgent,
                 "we're good"
             );
         });
@@ -63,7 +63,7 @@ public class UpdateTest {
             updateFactory.create(
                 "A",
                 Paths.get("update_A"),
-                testCurator,
+                testAgent,
                 "did I not add this yet?"
             );
         });
@@ -78,7 +78,7 @@ public class UpdateTest {
             updateFactory.create(
                 "A",
                 Paths.get("update_A"),
-                testCurator,
+                testAgent,
                 "did I stage something already?"
             );
         });
@@ -94,7 +94,7 @@ public class UpdateTest {
         final Update update = updateFactory.create(
             "A",
             Paths.get("update_A"),
-            testCurator,
+            testAgent,
             "we're good"
         );
 
@@ -102,7 +102,7 @@ public class UpdateTest {
         verify(clientMock).updateObjectFiles(
             "A",
             sourcePackageMock,
-            testCurator,
+            testAgent,
             "we're good"
         );
     }

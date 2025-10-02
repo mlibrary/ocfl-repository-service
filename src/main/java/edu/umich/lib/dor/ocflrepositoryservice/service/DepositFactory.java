@@ -2,7 +2,7 @@ package edu.umich.lib.dor.ocflrepositoryservice.service;
 
 import java.nio.file.Path;
 
-import edu.umich.lib.dor.ocflrepositoryservice.domain.Curator;
+import edu.umich.lib.dor.ocflrepositoryservice.domain.Agent;
 
 public class DepositFactory {
     private RepositoryClient repositoryClient;
@@ -19,7 +19,7 @@ public class DepositFactory {
     public Deposit create(
         String objectIdentifier,
         Path sourcePath,
-        Curator curator,
+        Agent agent,
         String message
     ) {
         return new Deposit(
@@ -27,7 +27,7 @@ public class DepositFactory {
             depositDir,
             objectIdentifier,
             sourcePath,
-            curator,
+            agent,
             message
         );
     }

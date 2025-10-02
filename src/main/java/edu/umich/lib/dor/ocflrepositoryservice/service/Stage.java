@@ -2,14 +2,14 @@ package edu.umich.lib.dor.ocflrepositoryservice.service;
 
 import java.nio.file.Path;
 
-import edu.umich.lib.dor.ocflrepositoryservice.domain.Curator;
+import edu.umich.lib.dor.ocflrepositoryservice.domain.Agent;
 
 public class Stage implements Command {
     private RepositoryClient repositoryClient;
     private Package sourcePackage;
 
     private String objectIdentifier;
-    private Curator curator;
+    private Agent agent;
     private String message;
 
     public Stage(
@@ -17,13 +17,13 @@ public class Stage implements Command {
         DepositDirectory depositDir,
         String objectIdentifier,
         Path sourcePath,
-        Curator curator,
+        Agent agent,
         String message
     ) {
         this.repositoryClient = repositoryClient;
 
         this.objectIdentifier = objectIdentifier;
-        this.curator = curator;
+        this.agent = agent;
         this.message = message;
 
         this.sourcePackage = depositDir.getPackage(sourcePath);
@@ -31,7 +31,7 @@ public class Stage implements Command {
 
     public void execute() {
         repositoryClient.stageChanges(
-            objectIdentifier, sourcePackage, curator, message
+            objectIdentifier, sourcePackage, agent, message
         );
     }
 }

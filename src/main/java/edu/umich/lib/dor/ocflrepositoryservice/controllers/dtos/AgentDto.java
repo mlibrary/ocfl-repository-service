@@ -1,14 +1,14 @@
 package edu.umich.lib.dor.ocflrepositoryservice.controllers.dtos;
 
-import edu.umich.lib.dor.ocflrepositoryservice.domain.Curator;
+import edu.umich.lib.dor.ocflrepositoryservice.domain.Agent;
 
-public class CuratorDto {
+public class AgentDto {
     private String username;
     private String email;
 
-    public CuratorDto(Curator curator) {
-        this.username = curator.username();
-        this.email = curator.email();
+    public AgentDto(Agent agent) {
+        this.username = agent.username();
+        this.email = agent.email();
     }
 
     public String getUsername() {

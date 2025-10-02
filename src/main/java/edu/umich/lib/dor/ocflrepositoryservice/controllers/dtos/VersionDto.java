@@ -5,14 +5,14 @@ import edu.umich.lib.dor.ocflrepositoryservice.domain.Version;
 public class VersionDto {
     private long number;
     private String message;
-    private CuratorDto curator;
+    private AgentDto agent;
     private String created;
     private boolean isStaged;
 
     public VersionDto(Version version) {
         this.number = version.number();
         this.message = version.message();
-        this.curator = new CuratorDto(version.curator());
+        this.agent = new AgentDto(version.agent());
         this.created = version.created().toString();
         this.isStaged = version.isStaged();
     }
@@ -25,8 +25,8 @@ public class VersionDto {
         return message;
     }
 
-    public CuratorDto getCurator() {
-        return curator;
+    public AgentDto getAgent() {
+        return agent;
     }
 
     public String getCreated() {

@@ -2,7 +2,7 @@ package edu.umich.lib.dor.ocflrepositoryservice.service;
 
 import java.nio.file.Path;
 
-import edu.umich.lib.dor.ocflrepositoryservice.domain.Curator;
+import edu.umich.lib.dor.ocflrepositoryservice.domain.Agent;
 
 public class StageFactory {
     RepositoryClient repositoryClient;
@@ -18,7 +18,7 @@ public class StageFactory {
     }
 
     public Stage create(
-        Curator curator,
+        Agent agent,
         String objectIdentifier,
         Path sourcePath,
         String message
@@ -28,7 +28,7 @@ public class StageFactory {
             depositDir,
             objectIdentifier,
             sourcePath,
-            curator,
+            agent,
             message
         );
     }

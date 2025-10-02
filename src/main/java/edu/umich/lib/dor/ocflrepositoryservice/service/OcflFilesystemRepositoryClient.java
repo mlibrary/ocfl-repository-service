@@ -17,7 +17,7 @@ import io.ocfl.core.extension.storage.layout.config.HashedNTupleLayoutConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import edu.umich.lib.dor.ocflrepositoryservice.domain.Curator;
+import edu.umich.lib.dor.ocflrepositoryservice.domain.Agent;
 import edu.umich.lib.dor.ocflrepositoryservice.domain.Version;
 
 public class OcflFilesystemRepositoryClient implements RepositoryClient {
@@ -39,17 +39,17 @@ public class OcflFilesystemRepositoryClient implements RepositoryClient {
         this.repo = repository;
     }
 
-    private VersionInfo createNewVersion(Curator curator, String message) {
-        return new VersionInfo().setUser(curator.username(), curator.email()).setMessage(message);
+    private VersionInfo createVersionInfo(Agent agent, String message) {
+        return new VersionInfo().setUser(agent.username(), agent.email()).setMessage(message);
     }
 
     public RepositoryClient createObject(
-        String id, Package sourcePackage, Curator curator, String message
+        String id, Package sourcePackage, Agent agent, String message
     ) {
         repo.putObject(
             ObjectVersionId.head(id),
             sourcePackage.getRootPath(),
-            createNewVersion(curator, message)
+            createVersionInfo(agent, message)
         );
         return this;
     }
@@ -105,7 +105,7 @@ public class OcflFilesystemRepositoryClient implements RepositoryClient {
             versions.add(new Version(
                 versionNum.getVersionNum(),
                 versionInfo.getMessage(),
-                new Curator(user.getName(), user.getAddress().replace("mailto:", "")),
+                new Agent(user.getName(), user.getAddress().replace("mailto:", "")),
                 versionInfo.getCreated(),
                 versionDetails.isMutable()
             ));
@@ -114,23 +114,23 @@ public class OcflFilesystemRepositoryClient implements RepositoryClient {
     }
 
     public RepositoryClient deleteObjectFile(
-        String objectId, String filePath, Curator curator, String message
+        String objectId, String filePath, Agent agent, String message
     ) {
         repo.updateObject(
             ObjectVersionId.head(objectId),
-            createNewVersion(curator, message),
+            createVersionInfo(agent, message),
             updater -> { updater.removeFile(filePath); }
         );
         return this;
     }
 
     public RepositoryClient updateObjectFiles(
-        String objectId, Package sourcePackage, Curator curator, String message
+        String objectId, Package sourcePackage, Agent agent, String message
     ) {
         Path rootPackagePath = sourcePackage.getRootPath();
         repo.updateObject(
             ObjectVersionId.head(objectId),
-            createNewVersion(curator, message),
+            createVersionInfo(agent, message),
             updater -> {
                 for (Path inputPath : sourcePackage.getFilePaths()) {
                     updater.addPath(
@@ -145,12 +145,12 @@ public class OcflFilesystemRepositoryClient implements RepositoryClient {
     }
 
     public RepositoryClient stageChanges(
-        String objectId, Package sourcePackage, Curator curator, String message
+        String objectId, Package sourcePackage, Agent agent, String message
     ) {
         Path rootPackagePath = sourcePackage.getRootPath();
         repo.stageChanges(
             ObjectVersionId.head(objectId),
-            createNewVersion(curator, message),
+            createVersionInfo(agent, message),
             updater -> {
                 for (Path inputPath : sourcePackage.getFilePaths()) {
                     updater.addPath(
@@ -165,9 +165,9 @@ public class OcflFilesystemRepositoryClient implements RepositoryClient {
     }
 
     public RepositoryClient commitChanges(
-        String objectId, Curator curator, String message
+        String objectId, Agent agent, String message
     ) {
-        repo.commitStagedChanges(objectId, createNewVersion(curator, message));
+        repo.commitStagedChanges(objectId, createVersionInfo(agent, message));
         return this;
     }
 

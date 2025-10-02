@@ -28,7 +28,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 
-import edu.umich.lib.dor.ocflrepositoryservice.domain.Curator;
+import edu.umich.lib.dor.ocflrepositoryservice.domain.Agent;
 import edu.umich.lib.dor.ocflrepositoryservice.domain.Version;
 import edu.umich.lib.dor.ocflrepositoryservice.service.OcflFilesystemRepositoryClient;
 import edu.umich.lib.dor.ocflrepositoryservice.service.Package;
@@ -83,7 +83,7 @@ public class OcflFilesystemRepositoryClientTest {
         repositoryClient.createObject(
             "A",
             sourcePackageMock,
-            new Curator("test", "test@example.edu"),
+            new Agent("test", "test@example.edu"),
             "adding images and metadata"
         );
 
@@ -140,7 +140,7 @@ public class OcflFilesystemRepositoryClientTest {
         repositoryClient.updateObjectFiles(
             "A",
             sourcePackageMock,
-            new Curator("test", "test@example.edu"),
+            new Agent("test", "test@example.edu"),
             "Updating files"
         );
     }
@@ -167,7 +167,7 @@ public class OcflFilesystemRepositoryClientTest {
             .thenReturn(createObjectDetails());
         List<Version> versions = repositoryClient.getVersions("A");
         Version expectedVersion = new Version(
-            1, "Some message", new Curator("test", "test@example.edu"), now, false
+            1, "Some message", new Agent("test", "test@example.edu"), now, false
         );
         assertIterableEquals(List.of(expectedVersion), versions);
     }
@@ -222,7 +222,7 @@ public class OcflFilesystemRepositoryClientTest {
         repositoryClient.stageChanges(
             "A",
             sourcePackageMock,
-            new Curator("test", "test@example.edu"),
+            new Agent("test", "test@example.edu"),
             "Staging some files"
         );
     }
@@ -231,7 +231,7 @@ public class OcflFilesystemRepositoryClientTest {
     public void clientCommitsChanges() {
         repositoryClient.commitChanges(
             "A",
-            new Curator("test", "test@example.edu"),
+            new Agent("test", "test@example.edu"),
             "Adding version based on changes"
         );
         verify(ocflRepositoryMock).commitStagedChanges(

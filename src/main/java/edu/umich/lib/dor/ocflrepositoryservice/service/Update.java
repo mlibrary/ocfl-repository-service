@@ -2,12 +2,12 @@ package edu.umich.lib.dor.ocflrepositoryservice.service;
 
 import java.nio.file.Path;
 
-import edu.umich.lib.dor.ocflrepositoryservice.domain.Curator;
+import edu.umich.lib.dor.ocflrepositoryservice.domain.Agent;
 import edu.umich.lib.dor.ocflrepositoryservice.exception.NoEntityException;
 import edu.umich.lib.dor.ocflrepositoryservice.exception.ObjectHasChangesException;
 
 public class Update implements Command {
-    private Curator curator;
+    private Agent agent;
     private String objectIdentifier;
     private String message;
     private RepositoryClient repositoryClient;
@@ -18,12 +18,12 @@ public class Update implements Command {
         DepositDirectory depositDir,
         String objectIdentifier,
         Path sourcePath,
-        Curator curator,
+        Agent agent,
         String message
     ) {
         this.repositoryClient = repositoryClient;
         this.objectIdentifier = objectIdentifier;
-        this.curator = curator;
+        this.agent = agent;
         this.message = message;
 
         boolean objectExists = repositoryClient.hasObject(objectIdentifier);
@@ -53,7 +53,7 @@ public class Update implements Command {
         repositoryClient.updateObjectFiles(
             objectIdentifier,
             sourcePackage,
-            curator,
+            agent,
             message
         );
     }

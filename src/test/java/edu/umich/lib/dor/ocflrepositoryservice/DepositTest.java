@@ -11,7 +11,7 @@ import java.nio.file.Paths;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import edu.umich.lib.dor.ocflrepositoryservice.domain.Curator;
+import edu.umich.lib.dor.ocflrepositoryservice.domain.Agent;
 import edu.umich.lib.dor.ocflrepositoryservice.exception.EntityAlreadyExistsException;
 import edu.umich.lib.dor.ocflrepositoryservice.service.Deposit;
 import edu.umich.lib.dor.ocflrepositoryservice.service.DepositDirectory;
@@ -20,7 +20,7 @@ import edu.umich.lib.dor.ocflrepositoryservice.service.OcflFilesystemRepositoryC
 import edu.umich.lib.dor.ocflrepositoryservice.service.Package;
 
 public class DepositTest {
-    Curator testCurator = new Curator("test", "test@example.edu");
+    Agent testAgent = new Agent("test", "test@example.edu");
 
     DepositDirectory depositDirMock;
     DepositFactory depositFactory;
@@ -49,7 +49,7 @@ public class DepositTest {
             depositFactory.create(
                 "A",
                 Paths.get("something"),
-                testCurator,
+                testAgent,
                 "we're good"
             );
         });
@@ -63,7 +63,7 @@ public class DepositTest {
             depositFactory.create(
                 "A",
                 Paths.get("/something"),
-                testCurator,
+                testAgent,
                 "did I already add this?"
             );
         });
@@ -78,13 +78,13 @@ public class DepositTest {
         final Deposit deposit = depositFactory.create(
             "A",
             Paths.get("something"),
-            testCurator,
+            testAgent,
             "we're good"
         );
 
         deposit.execute();
         verify(clientMock).createObject(
-            "A", sourcePackageMock, testCurator, "we're good"
+            "A", sourcePackageMock, testAgent, "we're good"
         );
     }
 }

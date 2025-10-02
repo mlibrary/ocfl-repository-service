@@ -10,7 +10,7 @@ import java.nio.file.Paths;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import edu.umich.lib.dor.ocflrepositoryservice.domain.Curator;
+import edu.umich.lib.dor.ocflrepositoryservice.domain.Agent;
 import edu.umich.lib.dor.ocflrepositoryservice.service.DepositDirectory;
 import edu.umich.lib.dor.ocflrepositoryservice.service.OcflFilesystemRepositoryClient;
 import edu.umich.lib.dor.ocflrepositoryservice.service.Package;
@@ -18,7 +18,7 @@ import edu.umich.lib.dor.ocflrepositoryservice.service.Stage;
 import edu.umich.lib.dor.ocflrepositoryservice.service.StageFactory;
 
 public class StageTest {
-    Curator testCurator = new Curator("test", "test@example.edu");
+    Agent testAgent = new Agent("test", "test@example.edu");
 
     DepositDirectory depositDirMock;
     StageFactory stageFactory;
@@ -44,7 +44,7 @@ public class StageTest {
 
         assertDoesNotThrow(() -> {
             stageFactory.create(
-                testCurator,
+                testAgent,
                 "A",
                 Paths.get("something"),
                 "we're good"
@@ -58,7 +58,7 @@ public class StageTest {
             .thenReturn(sourcePackageMock);
 
         final Stage stage = stageFactory.create(
-            testCurator,
+            testAgent,
             "A",
             Paths.get("something"),
             "we're good"
@@ -66,7 +66,7 @@ public class StageTest {
 
         stage.execute();
         verify(clientMock).stageChanges(
-            "A", sourcePackageMock, testCurator, "we're good"
+            "A", sourcePackageMock, testAgent, "we're good"
         );
     }
 }
